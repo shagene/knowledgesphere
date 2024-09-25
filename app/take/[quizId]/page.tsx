@@ -1,6 +1,10 @@
 import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
 
-const QuizTakingComponent = dynamic(() => import('@/components/quiz-taking').then(mod => mod.QuizTakingComponent), { ssr: false })
+const QuizTakingComponent = dynamic(
+  () => import('@/components/quiz-taking').then(mod => mod.QuizTakingComponent),
+  { ssr: false }
+)
 
 interface PageProps {
   params: { quizId: string }
@@ -8,8 +12,8 @@ interface PageProps {
 
 export default function TakeQuizPage({ params }: PageProps) {
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <QuizTakingComponent quizId={params.quizId} />
-    </div>
+    </Suspense>
   )
 }
