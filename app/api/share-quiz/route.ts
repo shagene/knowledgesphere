@@ -9,6 +9,10 @@ const kv = createClient({
 
 export async function POST(request: Request) {
   console.log('POST request received');
+  console.log('KV_REST_API_URL:', process.env.KV_REST_API_URL);
+  console.log('KV_REST_API_TOKEN:', process.env.KV_REST_API_TOKEN ? 'Set' : 'Not set');
+  console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
+
   try {
     const quiz = await request.json();
     console.log('Received quiz:', quiz);
@@ -21,10 +25,15 @@ export async function POST(request: Request) {
     
     // Return the share URL
     const shareLink = `${process.env.NEXT_PUBLIC_BASE_URL}/shared/${shareId}`;
+    console.log('Generated shareLink:', shareLink);
     return NextResponse.json({ shareLink });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in POST:', error);
-    return NextResponse.json({ error: 'Failed to share quiz' }, { status: 500 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: 'Failed to share quiz', details: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ error: 'Failed to share quiz', details: 'An unknown error occurred' }, { status: 500 });
+    }
   }
 }
 

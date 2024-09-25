@@ -42,7 +42,11 @@ const SavedQuizzesComponent: React.FC = () => {
   const handleShare = async (quiz: Quiz) => {
     try {
       console.log('Sharing quiz:', quiz);
-      const response = await fetch('/api/share-quiz', {
+      const apiUrl = process.env.NODE_ENV === 'production' 
+        ? '/api/share-quiz'
+        : 'http://localhost:3000/api/share-quiz';
+      console.log('API URL:', apiUrl);
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(quiz),
@@ -56,11 +60,11 @@ const SavedQuizzesComponent: React.FC = () => {
       console.log('Received shareLink:', shareLink);
       setShareLink(shareLink);
       setShareDialogOpen(true);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error sharing quiz:', error);
       toast({
         title: "Error sharing quiz",
-        description: "There was an error generating the share link. Please try again.",
+        description: `There was an error generating the share link. Please try again. Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     }

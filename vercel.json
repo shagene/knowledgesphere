@@ -1,0 +1,5 @@
+{
+  "routes": [
+    { "src": "/api/share-quiz", "methods": ["POST", "OPTIONS"], "dest": "/api/share-quiz" }
+  ]
+}
