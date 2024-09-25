@@ -30,10 +30,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useQueryClient } from '@tanstack/react-query'
 
 const QuizCreationComponent: React.FC = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const queryClient = useQueryClient()
   const [quizId, setQuizId] = useState<string | null>(null)
   const [quizName, setQuizName] = useState("")
   const [quizDescription, setQuizDescription] = useState("")
@@ -140,29 +142,29 @@ const QuizCreationComponent: React.FC = () => {
       questionCount: pairs.length
     }
 
+    console.log('Saving quiz:', quizData)
+
     let success: boolean
     if (quizId) {
       success = updateQuiz(quizData)
-      if (success) {
-        setNotification({
-          message: "Your quiz has been successfully updated.",
-          type: "success"
-        });
-      }
+      console.log('Updated quiz:', success ? 'success' : 'failed')
     } else {
       success = addQuiz(quizData)
-      if (success) {
-        setNotification({
-          message: "Your new quiz has been successfully created.",
-          type: "success"
-        });
-      }
+      console.log('Added new quiz:', success ? 'success' : 'failed')
     }
 
     if (success) {
+      // Invalidate and refetch quizzes
+      queryClient.invalidateQueries({ queryKey: ['quizzes'] })
+      
+      setNotification({
+        message: quizId ? "Your quiz has been successfully updated." : "Your new quiz has been successfully created.",
+        type: "success"
+      });
+
       setTimeout(() => {
         router.push('/saved')
-      }, 1500); // Delay navigation to allow user to see the success message
+      }, 1500)
     }
   }
 

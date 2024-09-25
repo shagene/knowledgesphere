@@ -16,22 +16,25 @@ export const useQuizStore = create<QuizStore>((set, get) => ({
   quizzes: [],
   loadQuizzes: () => {
     const storedQuizzes = JSON.parse(localStorage.getItem('savedQuizzes') || '[]') as Quiz[]
+    console.log('Loading quizzes from localStorage:', storedQuizzes)
     set({ quizzes: storedQuizzes })
     return storedQuizzes
   },
   addQuiz: (quiz) => {
-    const { quizzes } = get()
-    if (quizzes.some(q => q.title.toLowerCase() === quiz.title.toLowerCase())) {
+    const storedQuizzes = JSON.parse(localStorage.getItem('savedQuizzes') || '[]') as Quiz[]
+    if (storedQuizzes.some(q => q.title.toLowerCase() === quiz.title.toLowerCase())) {
+      console.log('Quiz with this name already exists:', quiz.title)
       return false
     }
-    const updatedQuizzes = [...quizzes, quiz]
+    const updatedQuizzes = [...storedQuizzes, quiz]
     localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes))
+    console.log('Added new quiz:', quiz)
     set({ quizzes: updatedQuizzes })
     return true
   },
   deleteQuiz: (id) => {
-    const { quizzes } = get()
-    const updatedQuizzes = quizzes.filter(q => q.id !== id)
+    const storedQuizzes = JSON.parse(localStorage.getItem('savedQuizzes') || '[]') as Quiz[]
+    const updatedQuizzes = storedQuizzes.filter(q => q.id !== id)
     localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes))
     set({ quizzes: updatedQuizzes })
   },

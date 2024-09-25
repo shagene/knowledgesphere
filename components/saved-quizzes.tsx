@@ -1,6 +1,6 @@
 "use client"
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQuizStore } from '@/store/quizStore'
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -26,11 +26,17 @@ const SavedQuizzesComponent: React.FC = () => {
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [shareLink, setShareLink] = useState("")
+  const queryClient = useQueryClient()
 
   const { data: quizzes, isLoading, error } = useQuery<Quiz[], Error>({
     queryKey: ['quizzes'],
-    queryFn: loadQuizzes,
-    staleTime: Infinity, // Prevents automatic refetching
+    queryFn: () => {
+      console.log('Fetching quizzes...')
+      const result = loadQuizzes()
+      console.log('Fetched quizzes:', result)
+      return result
+    },
+    staleTime: Infinity,
   })
 
   const handleShare = async (quiz: Quiz) => {
@@ -78,6 +84,8 @@ const SavedQuizzesComponent: React.FC = () => {
           const quiz = JSON.parse(e.target?.result as string);
           // Add validation here to ensure the JSON is in the correct format
           useQuizStore.getState().addQuiz(quiz);
+          // Invalidate and refetch quizzes
+          queryClient.invalidateQueries({ queryKey: ['quizzes'] })
           toast({
             title: "Quiz imported",
             description: "The quiz has been successfully imported.",
@@ -100,6 +108,8 @@ const SavedQuizzesComponent: React.FC = () => {
 
   const handleDelete = (quizId: string) => {
     deleteQuiz(quizId)
+    // Invalidate and refetch quizzes
+    queryClient.invalidateQueries({ queryKey: ['quizzes'] })
     toast({
       title: "Quiz deleted",
       description: "The quiz has been successfully removed from your saved quizzes.",
@@ -121,8 +131,16 @@ const SavedQuizzesComponent: React.FC = () => {
     quiz.description.toLowerCase().includes(searchTerm.toLowerCase())
   ) || []
 
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>An error occurred: {error.message}</div>
+  console.log('Rendered quizzes:', filteredQuizzes)
+
+  if (isLoading) {
+    console.log('Loading quizzes...')
+    return <div>Loading...</div>
+  }
+  if (error) {
+    console.error('Error loading quizzes:', error)
+    return <div>An error occurred: {error.message}</div>
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
