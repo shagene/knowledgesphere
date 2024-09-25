@@ -1,5 +1,11 @@
-import { SavedQuizzesComponent } from "@/components/saved-quizzes";
+import dynamic from 'next/dynamic'
+
+const SavedQuizzesComponent = dynamic(() => import('@/components/saved-quizzes'), { ssr: false })
 
 export default function SavedQuizzesPage() {
-  return <SavedQuizzesComponent />;
+  return (
+    <div>
+      <SavedQuizzesComponent />
+    </div>
+  )
 }

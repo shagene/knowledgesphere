@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react'
 import { useState, useEffect } from "react"
 import { useSearchParams } from 'next/navigation'
 import Link from "next/link"
@@ -30,7 +31,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-export function QuizCreationComponent() {
+const QuizCreationComponent: React.FC = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [quizId, setQuizId] = useState<string | null>(null)
@@ -320,3 +321,5 @@ export function QuizCreationComponent() {
     </div>
   )
 }
+
+export default QuizCreationComponent

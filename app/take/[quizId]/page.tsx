@@ -1,5 +1,15 @@
-import { QuizTakingComponent } from "@/components/quiz-taking"
+import dynamic from 'next/dynamic'
 
-export default function TakeQuizPage({ params }: { params: { quizId: string } }) {
-  return <QuizTakingComponent quizId={params.quizId} />
+const QuizTakingComponent = dynamic(() => import('@/components/quiz-taking').then(mod => mod.QuizTakingComponent), { ssr: false })
+
+interface PageProps {
+  params: { quizId: string }
+}
+
+export default function TakeQuizPage({ params }: PageProps) {
+  return (
+    <div>
+      <QuizTakingComponent quizId={params.quizId} />
+    </div>
+  )
 }

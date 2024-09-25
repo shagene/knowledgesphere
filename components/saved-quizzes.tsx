@@ -1,36 +1,43 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useQuery } from '@tanstack/react-query'
+import { useQuizStore } from '@/store/quizStore'
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogCancel,
 } from "@/components/ui/alert-dialog"
 import { BookOpen, Edit, Eye, Search, Share2, Trash2, Download, Upload } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-import { useQuizStore } from "@/store/quizStore"
 import { Quiz } from "@/types/quiz"
 
-export function SavedQuizzesComponent() {
+const SavedQuizzesComponent: React.FC = () => {
   const router = useRouter()
-  const { quizzes, deleteQuiz, loadQuizzes } = useQuizStore()
+  const { deleteQuiz, loadQuizzes } = useQuizStore()
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
-  const [currentQuizId, setCurrentQuizId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [shareLink, setShareLink] = useState("")
 
-  useEffect(() => {
-    loadQuizzes()
-  }, [loadQuizzes])
+  const { data: quizzes, isLoading, error } = useQuery<Quiz[], Error>({
+    queryKey: ['quizzes'],
+    queryFn: async () => {
+      const loadedQuizzes = loadQuizzes()
+      if (Array.isArray(loadedQuizzes)) {
+        return loadedQuizzes
+      } else {
+        throw new Error('Failed to load quizzes')
+      }
+    }
+  })
 
   const handleShare = async (quiz: Quiz) => {
     try {
@@ -115,10 +122,13 @@ export function SavedQuizzesComponent() {
     router.push(`/create?${queryParams}`);
   };
 
-  const filteredQuizzes = quizzes.filter(quiz => 
+  const filteredQuizzes = quizzes?.filter(quiz => 
     quiz.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     quiz.description.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  ) || []
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>An error occurred: {(error as Error).message}</div>
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -216,3 +226,5 @@ export function SavedQuizzesComponent() {
     </div>
   )
 }
+
+export default SavedQuizzesComponent
