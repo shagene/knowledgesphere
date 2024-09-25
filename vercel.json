@@ -1,5 +1,11 @@
 {
   "routes": [
-    { "src": "/api/share-quiz", "methods": ["POST", "OPTIONS"], "dest": "/api/share-quiz" }
-  ]
+    { "src": "/api/share-quiz", "methods": ["POST", "GET", "OPTIONS"], "dest": "/api/share-quiz" }
+  ],
+  "functions": {
+    "app/api/share-quiz/route.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 }

@@ -1,4 +1,4 @@
-# Quiz Application Development Checklist
+# KnowledgeSphere Development Checklist
 
 ## 1. Project Setup
 - [x] Initialize Next.js project with TypeScript

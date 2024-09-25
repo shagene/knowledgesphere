@@ -9,6 +9,8 @@ const kv = createClient({
 
 export async function POST(request: Request) {
   console.log('POST request received');
+  console.log('Request method:', request.method);
+  console.log('Request headers:', Object.fromEntries(request.headers));
   console.log('KV_REST_API_URL:', process.env.KV_REST_API_URL);
   console.log('KV_REST_API_TOKEN:', process.env.KV_REST_API_TOKEN ? 'Set' : 'Not set');
   console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
