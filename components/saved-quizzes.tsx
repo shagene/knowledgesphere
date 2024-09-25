@@ -29,14 +29,8 @@ const SavedQuizzesComponent: React.FC = () => {
 
   const { data: quizzes, isLoading, error } = useQuery<Quiz[], Error>({
     queryKey: ['quizzes'],
-    queryFn: async () => {
-      const loadedQuizzes = loadQuizzes()
-      if (Array.isArray(loadedQuizzes)) {
-        return loadedQuizzes
-      } else {
-        throw new Error('Failed to load quizzes')
-      }
-    }
+    queryFn: loadQuizzes,
+    staleTime: Infinity, // Prevents automatic refetching
   })
 
   const handleShare = async (quiz: Quiz) => {
@@ -128,7 +122,7 @@ const SavedQuizzesComponent: React.FC = () => {
   ) || []
 
   if (isLoading) return <div>Loading...</div>
-  if (error) return <div>An error occurred: {(error as Error).message}</div>
+  if (error) return <div>An error occurred: {error.message}</div>
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">

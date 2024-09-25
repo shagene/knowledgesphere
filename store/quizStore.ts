@@ -15,8 +15,7 @@ interface QuizStore {
 export const useQuizStore = create<QuizStore>((set, get) => ({
   quizzes: [],
   loadQuizzes: () => {
-    // Load quizzes from localStorage or wherever you're storing them
-    const storedQuizzes = JSON.parse(localStorage.getItem('quizzes') || '[]')
+    const storedQuizzes = JSON.parse(localStorage.getItem('savedQuizzes') || '[]') as Quiz[]
     set({ quizzes: storedQuizzes })
     return storedQuizzes
   },
@@ -25,35 +24,32 @@ export const useQuizStore = create<QuizStore>((set, get) => ({
     if (quizzes.some(q => q.title.toLowerCase() === quiz.title.toLowerCase())) {
       return false
     }
-    set((state) => {
-      const updatedQuizzes = [...state.quizzes, quiz]
-      localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes))
-      return { quizzes: updatedQuizzes }
-    })
+    const updatedQuizzes = [...quizzes, quiz]
+    localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes))
+    set({ quizzes: updatedQuizzes })
     return true
   },
-  deleteQuiz: (id) => set((state) => {
-    const updatedQuizzes = state.quizzes.filter(q => q.id !== id)
+  deleteQuiz: (id) => {
+    const { quizzes } = get()
+    const updatedQuizzes = quizzes.filter(q => q.id !== id)
     localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes))
-    return { quizzes: updatedQuizzes }
-  }),
+    set({ quizzes: updatedQuizzes })
+  },
   getQuiz: (id) => get().quizzes.find(q => q.id === id),
-  updateQuiz: (updatedQuiz: Quiz) => {
+  updateQuiz: (updatedQuiz) => {
     const { quizzes } = get()
     if (quizzes.some(q => q.id !== updatedQuiz.id && q.title.toLowerCase() === updatedQuiz.title.toLowerCase())) {
       return false
     }
-    set((state) => {
-      const updatedQuizzes = state.quizzes.map(quiz => 
-        quiz.id === updatedQuiz.id ? updatedQuiz : quiz
-      )
-      localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes))
-      return { quizzes: updatedQuizzes }
-    })
+    const updatedQuizzes = quizzes.map(quiz => 
+      quiz.id === updatedQuiz.id ? updatedQuiz : quiz
+    )
+    localStorage.setItem('savedQuizzes', JSON.stringify(updatedQuizzes))
+    set({ quizzes: updatedQuizzes })
     return true
   },
-  getQuizById: (id: string) => get().quizzes.find(q => q.id === id),
-  quizNameExists: (name: string, excludeId?: string) => {
+  getQuizById: (id) => get().quizzes.find(q => q.id === id),
+  quizNameExists: (name, excludeId) => {
     const { quizzes } = get()
     return quizzes.some(q => q.title.toLowerCase() === name.toLowerCase() && q.id !== excludeId)
   },
