@@ -1,0 +1,113 @@
+Application Overview
+
+Develop a public-facing test-taking and quizzing platform without authentication. The platform allows users to:
+
+    Create quizzes by adding questions and answers.
+    Interact with quizzes through drag-and-drop functionality.
+    Grade quizzes upon completion.
+    Save multiple quizzes to the browser cache.
+    Manage saved quizzes: update, delete, and share with others.
+
+Functional Requirements
+Quiz Creation
+
+    Users can add questions and corresponding answers.
+    Support for drag-and-drop interactions to match answers with questions.
+    Ability to edit questions and answers before saving.
+
+Quiz Interaction
+
+    Users can take quizzes by dragging answers to the correct questions.
+    Provide an option to finish or review the quiz.
+    Display grades after quiz completion, indicating correct and incorrect answers.
+
+Quiz Management
+
+    Save quizzes to the browser cache for later use.
+    Allow users to store multiple quizzes, each identifiable by a unique name or timestamp.
+    Provide functionality to update or delete saved quizzes.
+    Enable users to share quizzes via a unique URL or code.
+
+Technical Requirements
+Frontend
+
+    Utilize Next.js App Router for routing and server-side rendering.
+    Implement UI components using React with Shadcn UI and Radix UI for consistent styling and accessibility.
+    Apply Tailwind CSS for styling, following a mobile-first responsive design approach.
+    Ensure all components are functional and use TypeScript interfaces for props and state.
+
+Drag-and-Drop Functionality
+
+    Implement drag-and-drop using accessible solutions, possibly leveraging Radix UI primitives.
+    Ensure that drag-and-drop interactions are intuitive and provide visual feedback.
+
+State Management
+
+    Use React Server Components (RSC) where possible to minimize client-side JavaScript.
+    Limit the usage of use client, useEffect, and useState to essential components only.
+    Manage state within components using TypeScript interfaces, avoiding external state management libraries.
+
+Data Persistence
+
+    Store quizzes in the browser cache using mechanisms like Local Storage or IndexedDB.
+    Implement functionality to retrieve, update, and delete quizzes from the cache.
+    Ensure data is serialized and deserialized correctly using TypeScript interfaces.
+
+Sharing Quizzes
+
+    Generate a unique identifier for each quiz to facilitate sharing.
+    Users can share quizzes via URL parameters or serialized data.
+    When accessing a shared quiz, the application loads the quiz data based on the provided identifier.
+
+Performance Optimization
+
+    Optimize for Web Vitals:
+        Largest Contentful Paint (LCP): Prioritize loading essential content first.
+        Cumulative Layout Shift (CLS): Reserve space for dynamic content to prevent layout shifts.
+        First Input Delay (FID): Keep main thread work minimal and defer non-critical scripts.
+    Use dynamic imports for non-critical components to improve initial load times.
+    Optimize images by:
+        Using WebP format.
+        Including explicit width and height attributes.
+        Implementing lazy loading for off-screen images.
+    Wrap client components in <Suspense> with appropriate fallbacks.
+
+Accessibility
+
+    Ensure all interactive elements are keyboard-navigable.
+    Use semantic HTML and ARIA attributes where necessary.
+    Provide visual indicators for focus states and drag-and-drop actions.
+
+File and Code Structure
+
+    Organize components into appropriately named directories using lowercase with dashes (e.g., components/quiz-builder).
+    Structure files with:
+        Exported component at the top.
+        Subcomponents and helpers below.
+        Static content and types at the bottom.
+    Use named exports for all components.
+    Employ descriptive variable names with auxiliary verbs (e.g., isDragging, hasSubmitted).
+
+Considerations for Next.js
+
+    Follow Next.js documentation for Data Fetching, Rendering, and Routing practices.
+    Use server components and SSR to enhance performance and SEO.
+    Limit use client to small components that interact with the Web API.
+    Avoid using use client for data fetching or global state management.
+
+Next Steps
+
+    Design UI Mockups:
+        Sketch the user interfaces for quiz creation, interaction, and management.
+        Focus on mobile-first design, ensuring responsiveness across devices.
+    Define Data Models:
+        Create TypeScript interfaces for quizzes, questions, and answers.
+        Include types for cache management and shared quiz identifiers.
+    Plan Routing Structure:
+        Determine routes for creating quizzes (/create), taking quizzes (/quiz/[id]), and viewing saved quizzes (/saved).
+    Select Libraries:
+        Evaluate libraries for drag-and-drop functionality that are lightweight and accessible.
+        Consider using Radix UI primitives to build custom drag-and-drop components if suitable libraries are not available.
+    Performance Testing:
+        Plan for testing Web Vitals using tools like Lighthouse.
+        Implement necessary optimizations iteratively during development.
