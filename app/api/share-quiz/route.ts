@@ -8,8 +8,10 @@ const kv = createClient({
 });
 
 export async function POST(request: Request) {
+  console.log('POST request received');
   try {
     const quiz = await request.json();
+    console.log('Received quiz:', quiz);
     
     // Generate a unique ID for the shared quiz
     const shareId = Math.random().toString(36).substring(2, 8);
@@ -21,7 +23,7 @@ export async function POST(request: Request) {
     const shareLink = `${process.env.NEXT_PUBLIC_BASE_URL}/shared/${shareId}`;
     return NextResponse.json({ shareLink });
   } catch (error) {
-    console.error('Error sharing quiz:', error);
+    console.error('Error in POST:', error);
     return NextResponse.json({ error: 'Failed to share quiz' }, { status: 500 });
   }
 }
@@ -46,4 +48,16 @@ export async function GET(request: Request) {
     console.error('Error retrieving shared quiz:', error);
     return NextResponse.json({ error: 'Failed to retrieve shared quiz' }, { status: 500 });
   }
+}
+
+// Add this to handle OPTIONS requests (for CORS preflight)
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
 }

@@ -41,15 +41,23 @@ const SavedQuizzesComponent: React.FC = () => {
 
   const handleShare = async (quiz: Quiz) => {
     try {
+      console.log('Sharing quiz:', quiz);
       const response = await fetch('/api/share-quiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(quiz),
       });
+      console.log('Share response status:', response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
       const { shareLink } = await response.json();
+      console.log('Received shareLink:', shareLink);
       setShareLink(shareLink);
       setShareDialogOpen(true);
     } catch (error) {
+      console.error('Error sharing quiz:', error);
       toast({
         title: "Error sharing quiz",
         description: "There was an error generating the share link. Please try again.",
