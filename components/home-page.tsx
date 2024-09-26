@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BookOpen, PlusCircle, Save } from "lucide-react"
+import { BookOpen, PlusCircle, Save, Image, MessageSquare } from "lucide-react"
 import { useSearchParams } from 'next/navigation'
 import { toast } from "@/hooks/use-toast"
 
@@ -115,16 +115,103 @@ export function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-          <div className="px-4 md:px-6">
+      <section className="w-full py-12 md:py-24 lg:py-32">
+      <div className=" px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
                   Welcome to KnowledgeSphere
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                  Create, take, and save interactive quizzes. Perfect for students and educators.
+                  Revolutionize your learning experience with interactive quizzes powered by AI.
                 </p>
+              </div>
+              <div className="mx-auto max-w-3xl space-y-4">
+                <p className="text-gray-500 dark:text-gray-400">
+                  KnowledgeSphere is your ultimate platform for creating, taking, and sharing quizzes. Whether you're a student looking to ace your exams, an educator aiming to engage your students, or a lifelong learner passionate about expanding your knowledge, we've got you covered.
+                </p>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="flex items-start space-x-2">
+                    <svg
+                      className=" h-6 w-6 text-green-500"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <div className="text-left">
+                      <h3 className="font-bold">AI-Powered Creation</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Generate quizzes from images or through AI chat.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <svg
+                      className=" h-6 w-6 text-green-500"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <div className="text-left">
+                      <h3 className="font-bold">Customizable Quizzes</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Tailor quizzes to your specific learning needs.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <svg
+                      className=" h-6 w-6 text-green-500"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <div className="text-left">
+                      <h3 className="font-bold">Easy Sharing</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Share quizzes with friends or students effortlessly.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <svg
+                      className=" h-6 w-6 text-green-500"
+                      fill="none"
+                      height="24"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <div className="text-left">
+                      <h3 className="font-bold">Multiple Creation Methods</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Create quizzes manually, import from JSON, or use AI assistance.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="w-full max-w-sm space-y-2">
                 <form className="flex space-x-2" onSubmit={handleJoinQuiz}>
@@ -138,7 +225,7 @@ export function HomePage() {
                   <Button type="submit">Join Quiz</Button>
                 </form>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Don't have a code? Try creating your own quiz!
+                  Don't have a code? Try creating your own quiz or explore our featured quizzes below!
                 </p>
               </div>
             </div>
@@ -218,6 +305,59 @@ export function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* New AI Features Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
+          <div className=" px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">AI-Powered Quiz Creation</h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Leverage the power of AI to create quizzes from images or through natural language conversations.
+                </p>
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2 md:gap-8">
+                <Card className="w-full max-w-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-center">
+                      <Image className="mr-2 h-6 w-6" />
+                      Image to Quiz
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-500">
+                      Upload an image of your study material, and our AI will generate quiz questions based on the content.
+                    </p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" onClick={() => router.push('/create')}>
+                      Try Image to Quiz
+                    </Button>
+                  </CardFooter>
+                </Card>
+                <Card className="w-full max-w-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-center">
+                      <MessageSquare className="mr-2 h-6 w-6" />
+                      Chat with AI
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-500">
+                      Engage in a conversation with our AI to create customized quizzes tailored to your needs.
+                    </p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" onClick={() => router.push('/create')}>
+                      Start AI Chat
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="w-full py-12 md:py-24 lg:py-32">
           <div className=" px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
