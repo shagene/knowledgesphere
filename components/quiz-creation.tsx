@@ -1,15 +1,14 @@
 "use client"
 
-import React from 'react'
-import { useState, useEffect } from "react"
+import React, { useCallback } from 'react'
+import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from 'next/navigation'
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { BookOpen, Plus, Save, Trash2, Upload } from "lucide-react"
+import { BookOpen, Plus, Save, Trash2, Upload, Image, Loader2 } from "lucide-react"
 import { useQuizStore } from '@/store/quizStore'
 import { Quiz, QuizQuestion } from "@/types/quiz"
 import { useRouter } from 'next/navigation'
@@ -31,6 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useQueryClient } from '@tanstack/react-query'
+import AIChatModal from '@/components/ai-chat-modal'
 
 const QuizCreationComponent: React.FC = () => {
   const router = useRouter()
@@ -60,6 +60,23 @@ const QuizCreationComponent: React.FC = () => {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  const [isImageUploading, setIsImageUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const [uploadButtonText, setUploadButtonText] = useState('Upload Image')
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false)
+  const [extractedPairs, setExtractedPairs] = useState<QuizQuestion[]>([])
+
+  useEffect(() => {
+    if (isImageUploading) {
+      setUploadButtonText('Processing...')
+    } else {
+      // Add a small delay before changing the text back
+      const timer = setTimeout(() => setUploadButtonText('Upload Image'), 500)
+      return () => clearTimeout(timer)
+    }
+  }, [isImageUploading])
+
   const validateQuiz = (): string[] => {
     const errors: string[] = [];
     if (!quizName.trim()) {
@@ -80,6 +97,8 @@ const QuizCreationComponent: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!searchParams) return;
+
     const id = searchParams.get('id')
     const name = searchParams.get('name')
     const description = searchParams.get('description')
@@ -187,6 +206,62 @@ const QuizCreationComponent: React.FC = () => {
     }
   }
 
+  const handleImageUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setIsImageUploading(true)
+    setNotification({
+      message: "Uploading and processing image...",
+      type: "success"
+    })
+
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+
+      const response = await fetch('/api/process-image', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to process image')
+      }
+
+      const data = await response.json()
+      
+      setExtractedPairs(data.pairs)
+      setIsChatModalOpen(true)
+
+      setNotification({
+        message: `Successfully extracted ${data.pairs.length} question-answer pairs from the image.`,
+        type: "success"
+      })
+    } catch (error) {
+      console.error('Error processing image:', error)
+      setNotification({
+        message: "Failed to process image. Please try again.",
+        type: "error"
+      })
+    } finally {
+      setIsImageUploading(false)
+    }
+  }, [])
+
+  const handleChatModalClose = () => {
+    setIsChatModalOpen(false)
+  }
+
+  const handleChatModalAccept = (updatedPairs: QuizQuestion[]) => {
+    setPairs(updatedPairs)
+    setIsChatModalOpen(false)
+    setNotification({
+      message: `Updated quiz with ${updatedPairs.length} question-answer pairs.`,
+      type: "success"
+    })
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {notification && (
@@ -231,31 +306,53 @@ const QuizCreationComponent: React.FC = () => {
             <Button onClick={addPair} className="bg-indigo-500 hover:bg-indigo-600">
               <Plus className="mr-2 h-4 w-4" /> Add Pair
             </Button>
-            <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline">
-                  <Upload className="mr-2 h-4 w-4" /> Import JSON
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Import JSON</DialogTitle>
-                  <DialogDescription>
-                    Below is an example JSON array of question-answer pairs. You can modify this example or replace it entirely with your own JSON data. Ensure each object has a "question" and an "answer" field.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <Textarea
-                    value={jsonInput}
-                    onChange={(e) => setJsonInput(e.target.value)}
-                    rows={15}
-                  />
-                </div>
-                <DialogFooter>
-                  <Button onClick={handleImport}>Import</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <div className="space-x-2">
+              <Button 
+                key={isImageUploading ? 'uploading' : 'idle'}
+                onClick={() => fileInputRef.current?.click()} 
+                variant="outline"
+                disabled={isImageUploading}
+              >
+                {isImageUploading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Image className="mr-2 h-4 w-4" />
+                )}
+                {uploadButtonText}
+              </Button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+              <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Upload className="mr-2 h-4 w-4" /> Import JSON
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Import JSON</DialogTitle>
+                    <DialogDescription>
+                      Below is an example JSON array of question-answer pairs. You can modify this example or replace it entirely with your own JSON data. Ensure each object has a "question" and an "answer" field.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <Textarea
+                      value={jsonInput}
+                      onChange={(e) => setJsonInput(e.target.value)}
+                      rows={15}
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button onClick={handleImport}>Import</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
           <div className="space-y-4">
             {pairs.map((pair, index) => (
@@ -318,6 +415,12 @@ const QuizCreationComponent: React.FC = () => {
           </div>
         </div>
       </main>
+      <AIChatModal
+        isOpen={isChatModalOpen}
+        onClose={handleChatModalClose}
+        initialData={extractedPairs}
+        onAccept={handleChatModalAccept}
+      />
     </div>
   )
 }
