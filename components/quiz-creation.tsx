@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useQueryClient } from '@tanstack/react-query'
 import AIChatModal from '@/components/ai-chat-modal'
+import AIQuizGeneratorModal from '@/components/ai-quiz-generator-modal'
 
 const QuizCreationComponent: React.FC = () => {
   const router = useRouter()
@@ -66,6 +67,8 @@ const QuizCreationComponent: React.FC = () => {
   const [uploadButtonText, setUploadButtonText] = useState('Upload Image')
   const [isChatModalOpen, setIsChatModalOpen] = useState(false)
   const [extractedPairs, setExtractedPairs] = useState<QuizQuestion[]>([])
+
+  const [isQuizGeneratorModalOpen, setIsQuizGeneratorModalOpen] = useState(false)
 
   useEffect(() => {
     if (isImageUploading) {
@@ -262,6 +265,15 @@ const QuizCreationComponent: React.FC = () => {
     })
   }
 
+  const handleQuizGeneratorModalAccept = (generatedPairs: QuizQuestion[]) => {
+    setPairs(generatedPairs)
+    setIsQuizGeneratorModalOpen(false)
+    setNotification({
+      message: `Generated ${generatedPairs.length} question-answer pairs.`,
+      type: "success"
+    })
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {notification && (
@@ -352,6 +364,12 @@ const QuizCreationComponent: React.FC = () => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+              <Button 
+                onClick={() => setIsQuizGeneratorModalOpen(true)} 
+                variant="outline"
+              >
+                <BookOpen className="mr-2 h-4 w-4" /> Chat with AI
+              </Button>
             </div>
           </div>
           <div className="space-y-4">
@@ -420,6 +438,11 @@ const QuizCreationComponent: React.FC = () => {
         onClose={handleChatModalClose}
         initialData={extractedPairs}
         onAccept={handleChatModalAccept}
+      />
+      <AIQuizGeneratorModal
+        isOpen={isQuizGeneratorModalOpen}
+        onClose={() => setIsQuizGeneratorModalOpen(false)}
+        onAccept={handleQuizGeneratorModalAccept}
       />
     </div>
   )

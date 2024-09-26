@@ -10,27 +10,23 @@ interface Message {
   content: string
 }
 
-interface AIChatModalProps {
+interface AIQuizGeneratorModalProps {
   isOpen: boolean
   onClose: () => void
-  initialData: { question: string; answer: string }[]
   onAccept: (data: { question: string; answer: string }[]) => void
 }
 
-const AIChatModal: React.FC<AIChatModalProps> = ({ isOpen, onClose, initialData, onAccept }) => {
+const AIQuizGeneratorModal: React.FC<AIQuizGeneratorModalProps> = ({ isOpen, onClose, onAccept }) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (isOpen && initialData.length > 0) {
-      const initialMessage = `I've used AI to analyze the image and extract question-answer pairs. Please note that while AI is helpful, it's not perfect and may occasionally misinterpret or miss information. Feel free to review and modify the extracted pairs as needed.\n\nHere are the extracted question-answer pairs:\n\n${initialData.map((pair, index) => 
-`${index + 1}. Question: ${pair.question || 'N/A'}\n   Answer: ${pair.answer || 'N/A'}\n\n`).join('')}How would you like to modify these? You can ask me to add, remove, or change any of the pairs.`
-
-      setMessages([{ role: 'assistant', content: initialMessage }])
+    if (isOpen) {
+      setMessages([{ role: 'assistant', content: "Hello! I'm here to help you generate quiz questions. Let's start by discussing the topic of your quiz. What subject would you like to create questions about?" }])
     }
-  }, [isOpen, initialData])
+  }, [isOpen])
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -66,31 +62,31 @@ const AIChatModal: React.FC<AIChatModalProps> = ({ isOpen, onClose, initialData,
   }
 
   const handleAccept = () => {
-    const lastAssistantMessage = messages.filter(m => m.role === 'assistant').pop()
-    if (lastAssistantMessage) {
-      const pairs = lastAssistantMessage.content.split('\n\n')
-        .filter(pair => pair.includes(':'))
-        .map(pair => {
-          const lines = pair.split('\n').map(line => line.trim())
-          const questionLine = lines[0] || ''
-          const answerLine = lines[1] || ''
-          
-          const question = questionLine.replace(/^(\d+\.?\s*)?(Q(uestion)?:?\s*)?/i, '')
-          const answer = answerLine.replace(/^(A(nswer)?:?\s*)?/i, '')
-          
-          return { question, answer }
-        })
-        .filter(pair => pair.question || pair.answer) // Remove pairs where both question and answer are empty
-      onAccept(pairs)
-    }
-    onClose()
+    const pairs = messages
+      .filter(m => m.role === 'assistant')
+      .flatMap(m => {
+        const content = m.content;
+        const regex = /(\d+\.\s*Question:[\s\S]*?(?=\n\d+\.\s*Question:|$))/g;
+        const matches = content.match(regex) || [];
+        
+        return matches.map(match => {
+          const [questionPart, ...answerParts] = match.split('\nAnswer:');
+          const question = questionPart.replace(/^\d+\.\s*Question:\s*/i, '').trim();
+          const answer = answerParts.join('\nAnswer:').trim();
+          return { question, answer };
+        });
+      })
+      .filter(pair => pair.question && pair.answer); // Ensure both question and answer exist
+
+    onAccept(pairs);
+    onClose();
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Chat with AI</DialogTitle>
+          <DialogTitle>Generate Quiz with AI</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[300px] pr-4" ref={scrollAreaRef}>
           {messages.map((message, index) => (
@@ -120,4 +116,4 @@ const AIChatModal: React.FC<AIChatModalProps> = ({ isOpen, onClose, initialData,
   )
 }
 
-export default AIChatModal
+export default AIQuizGeneratorModal

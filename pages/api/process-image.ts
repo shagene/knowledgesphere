@@ -75,8 +75,8 @@ function processMistralResponse(content: string): { question: string; answer: st
   const pairs = content.split('\n\n').filter(Boolean)
   return pairs.map(pair => {
     const [questionLine, answerLine] = pair.split('\n').map(line => line.trim())
-    const question = questionLine.replace(/^Q:\s*/, '')
-    const answer = answerLine.replace(/^A:\s*/, '')
+    const question = questionLine.replace(/^(\d+\.?\s*)?(Q(uestion)?:?\s*)?/i, '')
+    const answer = answerLine.replace(/^(A(nswer)?:?\s*)?/i, '')
     return { question, answer }
   })
 }

@@ -19,11 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const chatResponse = await client.chat.complete({
       model: "mistral-medium",
       messages: [
-        ...messages,
         {
           role: "system",
-          content: "Please format your responses with numbered questions and answers, each on a separate line. For example:\n\n1. Question: What is the capital of France?\n   Answer: Paris\n\n2. Question: Who wrote 'Romeo and Juliet'?\n   Answer: William Shakespeare"
-        }
+          content: "You are an AI assistant helping to generate quiz questions. Engage in a conversation to understand the topic, difficulty level, and number of questions desired. When generating questions, format them as numbered pairs with 'Question:' and 'Answer:' labels. Each question-answer pair should be separated by a blank line. For math questions or any questions requiring multiple lines, include all parts of the question or answer together without additional numbering. For example:\n\n1. Question: What is the capital of France?\nAnswer: Paris\n\n2. Question: Solve the equation:\nx + 5 = 12\nAnswer: x = 7\n\n3. Question: List the first three prime numbers.\nAnswer: 2, 3, 5"
+        },
+        ...messages
       ],
     })
 
