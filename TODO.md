@@ -73,9 +73,12 @@
 - [ ] Conduct performance testing using Lighthouse
 
 ## 12. Documentation
-- [ ] Write README with project overview and setup instructions
-- [ ] Document key components and their usage
-- [ ] Create user guide or help section within the application
+- [x] Write README with project overview and setup instructions
+- [x] Document key components and their usage
+- [x] Create user guide or help section within the application
+- [x] Create Privacy Policy page
+- [x] Create Terms of Service page
+- [x] Update Footer to link to Privacy Policy and Terms of Service
 
 ## 13. Deployment and CI/CD
 - [x] Set up continuous integration pipeline

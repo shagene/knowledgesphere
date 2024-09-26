@@ -1,12 +1,19 @@
 import Link from "next/link"
-import { BookOpen } from "lucide-react"
+import Image from "next/image"
 
 export function Navigation() {
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center bg-slate-50">
       <Link className="flex items-center justify-center" href="/">
-        <BookOpen className="h-6 w-6 text-indigo-500" />
-        <span className="sr-only">KnowledgeSphere</span>
+        <Image
+          src="/knowledgesphere.png"
+          alt="KnowledgeSphere Logo"
+          width={32}
+          height={32}
+          className="h-6 w-6"
+          priority
+        />
+        <span className="ml-2 text-lg font-semibold">KnowledgeSphere</span>
       </Link>
       <nav className="ml-auto flex gap-4 sm:gap-6">
         <Link className="text-sm font-medium hover:underline underline-offset-4" href="/">

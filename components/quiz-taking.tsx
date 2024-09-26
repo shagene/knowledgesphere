@@ -186,12 +186,12 @@ export function QuizTakingComponent({ quizId }: QuizTakingComponentProps) {
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   className="absolute inset-0"
                 >
-                  <Card className="h-full">
+                  <Card className="h-full text-center">
                     <CardHeader>
-                      <CardTitle>{quiz.questions[currentCardIndex].question}</CardTitle>
+                      <CardTitle>{quiz.questions[currentCardIndex].answer}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p>{quiz.questions[currentCardIndex].answer}</p>
+                      <p>{quiz.questions[currentCardIndex].question}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
