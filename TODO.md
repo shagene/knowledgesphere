@@ -12,35 +12,20 @@
 
 ## 2. Design and UI
 - [x] Create mobile-first wireframes for all pages
-  - [x] Identify required pages
-  - [x] Sketch wireframes for each page
-  - [x] Ensure clear navigation and interactions
-  - [x] Review and iterate on wireframes
 - [x] Design UI components using Figma or similar tool
-  - [x] Import wireframes into the design tool
-  - [x] Design high-fidelity mockups
-  - [x] Define visual style (colors, typography, spacing)
-  - [x] Create reusable components
-  - [x] Ensure design consistency
-  - [x] Review and iterate on designs
 - [x] Create a consistent color scheme and typography system
-  - [x] Choose a primary color palette
-  - [x] Define neutral colors
-  - [x] Select typography styles
-  - [x] Create a style guide
-  - [x] Ensure color contrast for accessibility
 - [x] Implement responsive layouts using Tailwind CSS
   - [x] Set up Tailwind CSS
   - [x] Create responsive utility classes
   - [x] Implement responsive grid layouts
-  - [ ] Test on different devices
-  - [ ] Optimize for performance and accessibility
+  - [x] Test on different devices
+  - [x] Optimize for performance and accessibility
 
 ## 3. Component Development
 - [x] Develop reusable UI components (e.g., Button, Input, Card)
 - [x] Create Quiz Builder component
 - [x] Implement question and answer selection functionality for quiz interaction
-- [ ] Develop Quiz Grading component
+- [x] Develop Quiz Grading component
 - [x] Create Quiz Management interface for saved quizzes
 
 ## 4. Routing and Pages
@@ -61,8 +46,9 @@
 
 ## 7. Quiz Sharing Functionality
 - [x] Implement quiz serialization for sharing (JSON export)
-- [ ] Create system for generating and parsing share URLs
+- [x] Create system for generating and parsing share URLs
 - [x] Develop logic to load shared quizzes from JSON import
+- [x] Implement Vercel KV for temporary storage of shared quizzes
 
 ## 8. Quiz Interaction Implementation
 - [x] Implement question and answer selection for quiz taking
@@ -75,10 +61,10 @@
 - [ ] Test and optimize for screen readers
 
 ## 10. Performance Optimization
-- [ ] Implement dynamic imports for non-critical components
-- [ ] Optimize images (WebP format, size attributes, lazy loading)
-- [ ] Set up Suspense boundaries with appropriate fallbacks
-- [ ] Minimize use of client-side JavaScript
+- [x] Implement dynamic imports for non-critical components
+- [x] Optimize images (WebP format, size attributes, lazy loading)
+- [x] Set up Suspense boundaries with appropriate fallbacks
+- [x] Minimize use of client-side JavaScript
 
 ## 11. Testing
 - [ ] Write unit tests for utility functions and hooks
@@ -92,23 +78,48 @@
 - [ ] Create user guide or help section within the application
 
 ## 13. Deployment and CI/CD
-- [ ] Set up continuous integration pipeline
-- [ ] Configure deployment to Vercel
-  - [ ] Create a Vercel account if not already done
-  - [ ] Connect GitHub repository to Vercel
-  - [ ] Configure environment variables in Vercel dashboard
-  - [ ] Set up custom domain (if applicable)
-- [ ] Implement Vercel serverless function for quiz sharing
-  - [ ] Create `/api/share-quiz.ts` serverless function
-  - [ ] Implement temporary storage for shared quizzes (e.g., Vercel KV)
-  - [ ] Generate and return short-lived share links
-  - [ ] Handle quiz retrieval from share links
+- [x] Set up continuous integration pipeline
+- [x] Configure deployment to Vercel
+  - [x] Create a Vercel account if not already done
+  - [x] Connect GitHub repository to Vercel
+  - [x] Configure environment variables in Vercel dashboard
+  - [x] Set up custom domain (if applicable)
+- [x] Implement Vercel serverless function for quiz sharing
+  - [x] Create `/api/share-quiz.ts` serverless function
+  - [x] Implement temporary storage for shared quizzes (Vercel KV)
+  - [x] Generate and return short-lived share links
+  - [x] Handle quiz retrieval from share links
 - [ ] Set up monitoring and error tracking
   - [ ] Integrate error logging service (e.g., Sentry)
   - [ ] Configure performance monitoring
+- [x] Set up subdomain for the application
+  - [x] Configure DNS settings for the subdomain
+  - [x] Update Vercel project settings with the new domain
+  - [x] Update environment variables with the new domain
 
 ## 14. Final Review and Polish
 - [ ] Conduct thorough UX review and gather feedback
 - [ ] Address any remaining accessibility issues
 - [ ] Optimize for final performance improvements
 - [ ] Perform security audit and fix any vulnerabilities
+
+## 15. New Features and Enhancements
+- [x] Implement sample quizzes on the home page
+  - [x] Create three sample quizzes (Math, Science, History)
+  - [x] Add functionality to load sample quizzes into the quiz creation page
+- [x] Update home page layout and functionality
+  - [x] Add quiz code/URL input at the top of the page
+  - [x] Implement logic to handle both quiz codes and full share URLs
+- [x] Enhance quiz sharing functionality
+  - [x] Update API to return shareId instead of full URL
+  - [x] Modify client-side to construct full share URL
+- [x] Improve quiz creation component
+  - [x] Handle shared quizzes and sample quizzes differently
+  - [x] Update UI to reflect whether a quiz is new, shared, or a sample
+
+## 16. Backlog
+- [ ] Implement user authentication and authorization
+- [ ] Add quiz categories or tags
+- [ ] Develop a leaderboard or scoring system
+- [ ] Create a quiz search functionality
+- [ ] Implement quiz templates or question banks

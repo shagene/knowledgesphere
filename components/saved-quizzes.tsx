@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQuizStore } from '@/store/quizStore'
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog"
-import { BookOpen, Edit, Eye, Search, Share2, Trash2, Download, Upload } from "lucide-react"
+import { BookOpen, Edit, Eye, Search, Share2, Trash2, Download, Upload, Copy, Check } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { Quiz } from "@/types/quiz"
 
@@ -27,6 +27,7 @@ const SavedQuizzesComponent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [shareLink, setShareLink] = useState("")
   const queryClient = useQueryClient()
+  const [isCopied, setIsCopied] = useState(false)
 
   const { data: quizzes, isLoading, error } = useQuery<Quiz[], Error>({
     queryKey: ['quizzes'],
@@ -38,6 +39,16 @@ const SavedQuizzesComponent: React.FC = () => {
     },
     staleTime: Infinity,
   })
+
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(shareLink);
+    setIsCopied(true);
+    toast({
+      title: "Link copied",
+      description: "The share link has been copied to your clipboard.",
+    });
+    setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
+  }, [shareLink]);
 
   const handleShare = async (quiz: Quiz) => {
     try {
@@ -58,11 +69,14 @@ const SavedQuizzesComponent: React.FC = () => {
       }
       const responseData = await response.json();
       console.log('Received response data:', responseData);
-      if (responseData.shareLink) {
-        setShareLink(responseData.shareLink);
+      if (responseData.shareId) {
+        // Construct the full URL on the client side
+        const baseUrl = window.location.origin; // This gets the base URL of your application
+        const shareLink = `${baseUrl}/shared/${responseData.shareId}`;
+        setShareLink(shareLink);
         setShareDialogOpen(true);
       } else {
-        throw new Error('No shareLink in response');
+        throw new Error('No shareId in response');
       }
     } catch (error: unknown) {
       console.error('Error sharing quiz:', error);
@@ -238,13 +252,23 @@ const SavedQuizzesComponent: React.FC = () => {
               value={shareLink}
               className="flex-1"
             />
-            <Button onClick={() => {
-              navigator.clipboard.writeText(shareLink);
-              toast({
-                title: "Link copied",
-                description: "The share link has been copied to your clipboard.",
-              });
-            }}>Copy</Button>
+            <Button 
+              onClick={handleCopy}
+              disabled={isCopied}
+              className="w-24 transition-all duration-200 ease-in-out"
+            >
+              {isCopied ? (
+                <>
+                  <Check className="h-4 w-4 mr-2" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy
+                </>
+              )}
+            </Button>
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Close</AlertDialogCancel>

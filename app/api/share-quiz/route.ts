@@ -7,14 +7,20 @@ const kv = createClient({
   token: process.env.KV_REST_API_TOKEN,
 });
 
+// Helper function to get the base URL
+function getBaseUrl() {
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, '');
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return 'http://localhost:3000';
+}
+
 export async function POST(request: Request) {
   console.log('POST request received');
-  console.log('Request method:', request.method);
-  console.log('Request headers:', Object.fromEntries(request.headers));
-  console.log('KV_REST_API_URL:', process.env.KV_REST_API_URL);
-  console.log('KV_REST_API_TOKEN:', process.env.KV_REST_API_TOKEN ? 'Set' : 'Not set');
-  console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
-
+  
   try {
     const quiz = await request.json();
     console.log('Received quiz:', quiz);
@@ -22,13 +28,11 @@ export async function POST(request: Request) {
     // Generate a unique ID for the shared quiz
     const shareId = Math.random().toString(36).substring(2, 8);
     
-    // Store the quiz in Vercel KV with an expiration of 24 hours
+    // Ensure the quiz is stringified before storing
     await kv.set(`quiz:${shareId}`, JSON.stringify(quiz), { ex: 86400 });
     
-    // Return the share URL
-    const shareLink = `${process.env.NEXT_PUBLIC_BASE_URL}/shared/${shareId}`;
-    console.log('Generated shareLink:', shareLink);
-    return NextResponse.json({ shareLink });
+    console.log('Generated shareId:', shareId);
+    return NextResponse.json({ shareId });
   } catch (error: unknown) {
     console.error('Error in POST:', error);
     if (error instanceof Error) {
@@ -54,7 +58,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ quiz: JSON.parse(quizData as string) });
+    // Check if quizData is already an object
+    const quiz = typeof quizData === 'object' ? quizData : JSON.parse(quizData as string);
+
+    return NextResponse.json({ quiz });
   } catch (error) {
     console.error('Error retrieving shared quiz:', error);
     return NextResponse.json({ error: 'Failed to retrieve shared quiz' }, { status: 500 });

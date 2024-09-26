@@ -40,6 +40,7 @@ const QuizCreationComponent: React.FC = () => {
   const [quizName, setQuizName] = useState("")
   const [quizDescription, setQuizDescription] = useState("")
   const [pairs, setPairs] = useState<QuizQuestion[]>([{ question: "", answer: "" }])
+  const [isShared, setIsShared] = useState(false)
   const { addQuiz, updateQuiz, getQuizById, quizNameExists } = useQuizStore()
 
   const [jsonInput, setJsonInput] = useState(JSON.stringify([
@@ -83,6 +84,7 @@ const QuizCreationComponent: React.FC = () => {
     const name = searchParams.get('name')
     const description = searchParams.get('description')
     const questions = searchParams.get('questions')
+    const shared = searchParams.get('isShared')
 
     if (id) setQuizId(id)
     if (name) setQuizName(name)
@@ -94,6 +96,9 @@ const QuizCreationComponent: React.FC = () => {
       } catch (error) {
         console.error("Failed to parse questions:", error)
       }
+    }
+    if (shared === 'true') {
+      setIsShared(true)
     }
   }, [searchParams])
 
@@ -133,32 +138,25 @@ const QuizCreationComponent: React.FC = () => {
     }
 
     const quizData: Quiz = {
-      id: quizId || Date.now().toString(),
+      id: isShared ? Date.now().toString() : (quizId || Date.now().toString()),
       title: quizName,
       description: quizDescription,
       questions: pairs,
-      createdAt: existingQuiz ? existingQuiz.createdAt : new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       lastEdited: new Date().toISOString(),
       questionCount: pairs.length
     }
 
     console.log('Saving quiz:', quizData)
 
-    let success: boolean
-    if (quizId) {
-      success = updateQuiz(quizData)
-      console.log('Updated quiz:', success ? 'success' : 'failed')
-    } else {
-      success = addQuiz(quizData)
-      console.log('Added new quiz:', success ? 'success' : 'failed')
-    }
+    let success: boolean = addQuiz(quizData)
+    console.log('Added new quiz:', success ? 'success' : 'failed')
 
     if (success) {
-      // Invalidate and refetch quizzes
       queryClient.invalidateQueries({ queryKey: ['quizzes'] })
       
       setNotification({
-        message: quizId ? "Your quiz has been successfully updated." : "Your new quiz has been successfully created.",
+        message: isShared ? "Shared quiz has been saved to your quizzes." : "Your new quiz has been successfully created.",
         type: "success"
       });
 
@@ -200,7 +198,7 @@ const QuizCreationComponent: React.FC = () => {
       <main className="flex-1 py-6 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-6">
-            {quizId ? "Edit Quiz" : "Create a New Quiz"}
+            {isShared ? "Save Shared Quiz" : (quizId ? "Edit Quiz" : "Create a New Quiz")}
           </h1>
           <Card className="mb-6">
             <CardHeader>
@@ -302,13 +300,13 @@ const QuizCreationComponent: React.FC = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div> {/* Wrapper div to allow the button to be disabled */}
+                  <div>
                     <Button 
                       onClick={handleSave} 
                       className="bg-green-500 hover:bg-green-600"
                       disabled={validateQuiz().length > 0}
                     >
-                      <Save className="mr-2 h-4 w-4" /> Save Quiz
+                      <Save className="mr-2 h-4 w-4" /> {isShared ? "Save Shared Quiz" : "Save Quiz"}
                     </Button>
                   </div>
                 </TooltipTrigger>
