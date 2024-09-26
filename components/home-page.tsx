@@ -70,8 +70,8 @@ const sampleQuizzes = [
 export function HomePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [quizName, setQuizName] = useState(searchParams.get('name') || "")
-  const [quizDescription, setQuizDescription] = useState(searchParams.get('description') || "")
+  const [quizName, setQuizName] = useState(searchParams?.get('name') || "")
+  const [quizDescription, setQuizDescription] = useState(searchParams?.get('description') || "")
   const [quizCode, setQuizCode] = useState("")
 
   const handleCreateQuiz = (e: React.FormEvent) => {
