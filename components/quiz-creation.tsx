@@ -314,16 +314,17 @@ const QuizCreationComponent: React.FC = () => {
               </div>
             </CardContent>
           </Card>
-          <div className="flex justify-between mb-4">
-            <Button onClick={addPair} className="bg-indigo-500 hover:bg-indigo-600">
+          <div className="flex flex-col sm:flex-row sm:justify-between mb-4 space-y-2 sm:space-y-0 sm:space-x-2">
+            <Button onClick={addPair} className="bg-indigo-500 hover:bg-indigo-600 w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" /> Add Pair
             </Button>
-            <div className="space-x-2">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
               <Button 
                 key={isImageUploading ? 'uploading' : 'idle'}
                 onClick={() => fileInputRef.current?.click()} 
                 variant="outline"
                 disabled={isImageUploading}
+                className="w-full sm:w-auto"
               >
                 {isImageUploading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -341,7 +342,7 @@ const QuizCreationComponent: React.FC = () => {
               />
               <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     <Upload className="mr-2 h-4 w-4" /> Import JSON
                   </Button>
                 </DialogTrigger>
@@ -367,6 +368,7 @@ const QuizCreationComponent: React.FC = () => {
               <Button 
                 onClick={() => setIsQuizGeneratorModalOpen(true)} 
                 variant="outline"
+                className="w-full sm:w-auto"
               >
                 <BookOpen className="mr-2 h-4 w-4" /> Chat with AI
               </Button>
