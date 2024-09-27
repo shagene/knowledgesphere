@@ -34,32 +34,102 @@ const AIQuizGeneratorModal: React.FC<AIQuizGeneratorModalProps> = ({ isOpen, onC
     }
   }, [messages])
 
-  const handleSendMessage = async () => {
-    if (input.trim() === '') return
+  const formatAnswers = (content: string) => {
+    const lines = content.split('\n');
+    let formattedContent = '';
+    let currentQuestion = '';
 
-    const userMessage = { role: 'user' as const, content: input }
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
+    for (let line of lines) {
+      if (line.match(/^\d+\.\s*Question:/)) {
+        if (currentQuestion) {
+          formattedContent += currentQuestion + '\n';
+        }
+        currentQuestion = line + '\n';
+      } else if (line.startsWith('Answer:')) {
+        const answer = line.replace('Answer:', '').trim();
+        const options = generateOptions(answer);
+        currentQuestion += 'Options:\n';
+        options.forEach((option, index) => {
+          currentQuestion += `${String.fromCharCode(97 + index)}) ${option}\n`;
+        });
+        currentQuestion += `Answer: ${String.fromCharCode(97 + options.indexOf(answer))}\n`;
+      }
+    }
+
+    if (currentQuestion) {
+      formattedContent += currentQuestion;
+    }
+
+    return formattedContent;
+  };
+
+  const generateOptions = (correctAnswer: string) => {
+    const options = [correctAnswer];
+    while (options.length < 4) {
+      const fakeAnswer = generateFakeAnswer(correctAnswer, options);
+      if (!options.includes(fakeAnswer)) {
+        options.push(fakeAnswer);
+      }
+    }
+    return shuffleArray(options);
+  };
+
+  const generateFakeAnswer = (correctAnswer: string, existingOptions: string[]) => {
+    const words = correctAnswer.split(' ');
+    if (words.length > 1) {
+      // For multi-word answers, shuffle the words
+      return shuffleArray([...words]).join(' ');
+    } else {
+      // For single-word answers, use similar words or modify the original
+      const similarWords = [
+        'hurricane', 'typhoon', 'cyclone', 'storm', 'wind', 'rain',
+        'pressure', 'ocean', 'coast', 'damage', 'evacuation', 'category',
+        'intensity', 'landfall', 'surge', 'eye', 'rotation', 'formation'
+      ];
+      let fakeAnswer;
+      do {
+        fakeAnswer = similarWords[Math.floor(Math.random() * similarWords.length)];
+      } while (existingOptions.includes(fakeAnswer) || fakeAnswer === correctAnswer);
+      return fakeAnswer;
+    }
+  };
+
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
+  const handleSendMessage = async () => {
+    if (input.trim() === '') return;
+
+    const userMessage = { role: 'user' as const, content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: [...messages, userMessage] }),
-      })
+      });
 
-      if (!response.ok) throw new Error('Failed to get response')
+      if (!response.ok) throw new Error('Failed to get response');
 
-      const data = await response.json()
-      setMessages(prev => [...prev, { role: 'assistant', content: data.message }])
+      const data = await response.json();
+      const formattedContent = formatAnswers(data.message);
+      setMessages(prev => [...prev, { role: 'assistant', content: formattedContent }]);
     } catch (error) {
-      console.error('Error in chat:', error)
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }])
+      console.error('Error in chat:', error);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleAccept = () => {
     const pairs = messages
